@@ -1,0 +1,73 @@
+/**
+ * Zenhuman - CSS modifications for Superhuman
+ * Rules are gated by classes on <html> element for easy toggling
+ */
+
+/* Hide right panel (contact enrichment sidebar) */
+html.zh-hide-right-panel .layout-RightPane {
+  display: none !important;
+}
+
+/* When right panel is hidden, expand content to fill the space */
+/* Override the flex basis and max-width calculations */
+html.zh-hide-right-panel .layout-ThreadPane {
+  flex: 1 1 100% !important;
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+html.zh-hide-right-panel .layout-ContentPane {
+  flex: 1 1 100% !important;
+  max-width: 100% !important;
+}
+
+html.zh-hide-right-panel .ThreadPaneView {
+  flex: 1 1 100% !important;
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+/* Also hide the floating action pane if it's constraining layout */
+html.zh-hide-right-panel .ActionPane-floating-clickable {
+  /* Keep visible but don't let it affect layout calculations */
+  position: absolute !important;
+}
+
+/* Compact email header: hide unsubscribe button, smaller subject */
+html.zh-compact-header .ThreadPane-header-status {
+  display: none !important;
+}
+
+html.zh-compact-header .ThreadPane-subject {
+  font-size: 16px !important;
+  line-height: 24px !important;
+}
+
+/* Hide Share and Up/Down navigation buttons in header */
+html.zh-compact-header .ThreadPane-header .ThreadActions-clickable-share {
+  display: none !important;
+}
+
+html.zh-compact-header .ThreadPane-header .UpDownButtons-container {
+  display: none !important;
+}
+
+html.zh-compact-header .ThreadPane-header .ThreadActions-clickable-control {
+  display: none !important;
+}
+
+/* Hide hint tooltips (e.g., "Next time, hit E to Mark Done instantly!") */
+html.zh-hide-hint-tooltips .HintTooltip {
+  display: none !important;
+}
+
+/* Hide text selection tooltips (Quote/Enter/R/F) */
+html.zh-hide-hint-tooltips .LayerTarget-iframetooltip .Tooltip {
+  display: none !important;
+}
+
+/* Hide "Marked as Done" notifications */
+html.zh-hide-hint-tooltips .NotificationsStack {
+  display: none !important;
+}
+

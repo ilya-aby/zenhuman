@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "Zenhuman",
+  "version": "1.0.0",
+  "description": "A cleaner, calmer Superhuman experience",
+  "icons": {
+    "16": "assets/icon-zenhuman.png",
+    "48": "assets/icon-zenhuman.png",
+    "128": "assets/icon-zenhuman.png"
+  },
+  "permissions": ["storage"],
+  "host_permissions": ["https://mail.superhuman.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://mail.superhuman.com/*"],
+      "css": ["src/styles.css"],
+      "js": ["src/content.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "action": {
+    "default_icon": "assets/icon-zenhuman.png",
+    "default_title": "Zenhuman Settings",
+    "default_popup": "src/popup.html"
+  }
+}
