@@ -38,3 +38,9 @@ All CSS modifications use classes prefixed with `zh-` (e.g., `zh-hide-right-pane
 - `compactHeader` - Smaller email headers, hides share/navigation buttons
 - `hideHintTooltips` - Hides keyboard shortcut hints and notifications
 - `simplerInboxZero` - Hides streak message, team button, referral/help/calendar icons on inbox zero screen
+
+## Documentation
+
+When adding or modifying features, update both:
+- This file (AGENTS.md) - Add to Current Features list
+- README.md - Add to Features list
