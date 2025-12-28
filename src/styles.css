@@ -71,3 +71,41 @@ html.zh-hide-hint-tooltips .NotificationsStack {
   display: none !important;
 }
 
+/* Simpler Inbox Zero: hide streak, team button, referral, help, and calendar icons */
+html.zh-simpler-inbox-zero .ShareInboxZero {
+  display: none !important;
+}
+
+html.zh-simpler-inbox-zero .FooterTeamButton {
+  display: none !important;
+}
+
+html.zh-simpler-inbox-zero .IZ-actions-divider-container {
+  display: none !important;
+}
+
+html.zh-simpler-inbox-zero .Footer-actions-divider-container {
+  display: none !important;
+}
+
+html.zh-simpler-inbox-zero .Footer-invite-clickable {
+  display: none !important;
+}
+
+html.zh-simpler-inbox-zero .Footer-contact-us-clickable {
+  display: none !important;
+}
+
+html.zh-simpler-inbox-zero .Footer-calendar-clickable {
+  display: none !important;
+}
+
+/* Push remaining footer items (settings gear) to the right */
+html.zh-simpler-inbox-zero .Footer-actions-bar {
+  justify-content: flex-end !important;
+}
+
+html.zh-simpler-inbox-zero .Footer-actions {
+  margin-left: auto !important;
+}
+
