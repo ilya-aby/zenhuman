@@ -38,6 +38,7 @@ All CSS modifications use classes prefixed with `zh-` (e.g., `zh-hide-right-pane
 - `compactHeader` - Smaller email headers, hides share/navigation buttons
 - `hideHintTooltips` - Hides keyboard shortcut hints and notifications
 - `simplerInboxZero` - Hides streak message, team button, referral/help/calendar icons on inbox zero screen
+- `hideAchievementPopups` - Hides achievement popups like conversation-clearing milestones
 
 ## Documentation
 

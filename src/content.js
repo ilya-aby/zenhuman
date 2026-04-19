@@ -6,7 +6,8 @@ const DEFAULT_SETTINGS = {
   removeRightPanel: true,
   compactHeader: true,
   hideHintTooltips: true,
-  simplerInboxZero: true
+  simplerInboxZero: true,
+  hideAchievementPopups: true
 };
 
 function applySettings(settings) {
@@ -15,6 +16,7 @@ function applySettings(settings) {
   html.classList.toggle('zh-compact-header', settings.compactHeader);
   html.classList.toggle('zh-hide-hint-tooltips', settings.hideHintTooltips);
   html.classList.toggle('zh-simpler-inbox-zero', settings.simplerInboxZero);
+  html.classList.toggle('zh-hide-achievement-popups', settings.hideAchievementPopups);
 }
 
 // Load settings and apply

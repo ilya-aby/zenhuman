@@ -71,6 +71,11 @@ html.zh-hide-hint-tooltips .NotificationsStack {
   display: none !important;
 }
 
+/* Hide achievement popups (e.g., "You've cleared 100 conversations!") */
+html.zh-hide-achievement-popups .AchievementNotification-status {
+  display: none !important;
+}
+
 /* Simpler Inbox Zero: hide streak, team button, referral, help, and calendar icons */
 html.zh-simpler-inbox-zero .ShareInboxZero {
   display: none !important;
@@ -108,4 +113,3 @@ html.zh-simpler-inbox-zero .Footer-actions-bar {
 html.zh-simpler-inbox-zero .Footer-actions {
   margin-left: auto !important;
 }
-
