@@ -1,0 +1,114 @@
+/* Runs production extraction and pane lifecycle code against real browser DOM. */
+(async () => {
+  const report = document.getElementById('report');
+  const passed = [];
+  const pause = () => new Promise(resolve => setTimeout(resolve, 650));
+  function check(condition, label) { if (!condition) throw new Error(label); passed.push(label); }
+  const message = document.getElementById('message');
+  const body = document.getElementById('host').shadowRoot.querySelector('.ShadowBody');
+  const mockSummary = { gist: '<b>Test summary, not markup.</b>', points: [{ label: 'Useful <img>', text: 'A useful point.' }], actions: [] };
+  function settings(next) {
+    Object.assign(fixtureSettings, next);
+    fixtureListeners.forEach(listener => listener({ summarizeEmails: { newValue: fixtureSettings.summarizeEmails } }, 'sync'));
+  }
+  try {
+    const sender = message.querySelector('.ContactName-collapsed');
+    check(getComputedStyle(sender).color === 'rgba(255, 255, 255, 0.8)', 'Ordinary Carbon emails retain their light sender on a dark background');
+    message.classList.add('isMarketing');
+    check(getComputedStyle(sender).color === 'rgba(0, 0, 0, 0.8)' && getComputedStyle(message).backgroundColor === 'rgb(255, 255, 255)', 'Collapsed newsletter sender stays readable on white, before a summary exists');
+    message.querySelector('.MessagePane-header').insertAdjacentHTML('beforeend', '<div class="MessagePane-emailHeader"><span class="ContactName">Expanded sender</span></div>');
+    check(getComputedStyle(message.querySelector('.MessagePane-emailHeader .ContactName')).color === 'rgba(0, 0, 0, 0.8)', 'Expanded From and To header colors remain unchanged');
+    body.innerHTML = '<style>.hidden { display: none; }</style><p class="hidden">secret preheader</p><p>Useful content with <a href="#">a meaningful link</a>.</p><div class="sponsored">Buy an advertisement</div><blockquote type="cite">Old quoted reply</blockquote><p>View in browser</p><footer>Payment is due Friday.</footer>';
+    const extracted = ZenhumanEmailText.extractMessage(message);
+    check(extracted.includes('a meaningful link'), 'Preserves meaningful link text');
+    check(extracted.includes('Payment is due Friday'), 'Preserves meaningful invoice footer');
+    check(!/secret preheader|advertisement|Old quoted|View in browser|display: none/.test(extracted), 'Filters hidden text, ads, quoted replies, navigation, and CSS');
+    body.innerHTML = '<p>' + 'word '.repeat(200) + '</p><div class="sponsored">' + 'advertisement '.repeat(1000) + '</div>';
+    await pause();
+    check(!document.querySelector('.zh-summary-card') && fixtureRequests.length === 0, 'Exactly 200 meaningful words does not trigger a request');
+    body.querySelector('p').textContent += 'extra';
+    await pause();
+    check(fixtureRequests.length === 1 && document.querySelector('.zh-summary-card'), '201 words triggers one card and one request');
+    check(document.querySelector('.zh-summary-title').textContent === 'Summarizing...', 'The header says Summarizing... while the request is pending');
+    check(!fixtureRequests[0].message.text.includes('advertisement'), 'Advertising is absent from API input');
+    fixtureRequests[0].resolve({ ok: true, summary: mockSummary });
+    await pause();
+    check(document.querySelector('.zh-summary-gist').textContent === mockSummary.gist && !document.querySelector('.zh-summary-gist b'), 'Renders model output as text, never HTML');
+    check(document.querySelector('.zh-summary-point-label').textContent === 'Useful <img>: ' && !document.querySelector('.zh-summary-card img'), 'Topic labels provide emphasis and remain safe plain text');
+    check(document.querySelector('.zh-summary-title').textContent === 'Summary', 'The header says Summary when the result is ready');
+    check(fixtureRequests.length === 1, 'Card mutations do not cause repeated API calls');
+    document.querySelector('.zh-summary-toggle').click();
+    await pause();
+    check(document.querySelector('.zh-summary-content').hidden, 'Collapse hides summary content');
+    document.querySelector('.zh-summary-toggle').click();
+    await pause();
+    check(!document.querySelector('.zh-summary-content').hidden, 'Expand restores summary content');
+    const originalText = body.querySelector('p').textContent;
+    const started = performance.now();
+    settings({ summarizeEmails: false });
+    // Reproduce a busy Superhuman layout: mutations must not restart a quiet-period timer.
+    let tick = 0;
+    const chatter = setInterval(() => message.classList.toggle('fixture-chatter', Boolean(tick++ % 2)), 10);
+    settings({ summarizeEmails: true });
+    while (!document.querySelector('.zh-summary-gist') && performance.now() - started < 300) {
+      await new Promise(resolve => requestAnimationFrame(resolve));
+    }
+    clearInterval(chatter);
+    const cachedMs = Math.round(performance.now() - started);
+    check(Boolean(document.querySelector('.zh-summary-gist')) && cachedMs < 300, `Cached revisit renders promptly (${cachedMs} ms)`);
+    check(fixtureRequests.length === 1, 'Cached revisits need no background message or API call');
+    body.querySelector('p').textContent += ' changed';
+    await pause();
+    check(fixtureRequests.length === 2, 'An edited message invalidates its summary');
+    fixtureRequests[1].resolve({ ok: false, error: 'Temporary service error' });
+    await pause();
+    check(!document.querySelector('.zh-summary-card').classList.contains('is-loading') && document.querySelector('.zh-summary-status').textContent === 'Temporary service error', 'An error stops the spinner and explains how to recover');
+    document.querySelector('.zh-summary-retry').click();
+    await pause();
+    check(fixtureRequests.length === 3 && document.querySelector('.zh-summary-card').classList.contains('is-loading') && document.querySelector('.zh-summary-title').textContent === 'Summarizing...', 'Retry restores Summarizing... and the compact loading indicator');
+    history.replaceState({}, '', '/inbox');
+    fixtureRequests[2].resolve({ ok: true, summary: { ...mockSummary, gist: 'Stale result' } });
+    await pause();
+    check(!document.querySelector('.zh-summary-gist')?.textContent.includes('Stale result'), 'A pending result cannot paint onto another route');
+    history.replaceState({}, '', '/inbox/thread/fixture');
+    body.querySelector('p').textContent = originalText;
+    await pause();
+    check(document.querySelector('.zh-summary-gist')?.textContent === mockSummary.gist, 'Restoring the original content restores its cached summary');
+    const previousRequests = fixtureRequests.length;
+    settings({ summaryModel: 'gpt-6-luna' });
+    await pause();
+    check(fixtureRequests.length === previousRequests + 1, 'Changing model refreshes the open email');
+    settings({ summaryModel: 'gpt-6-astra' });
+    await pause();
+    check(fixtureRequests.length === previousRequests + 2, 'Switching models during loading starts the requested summary');
+    fixtureRequests[previousRequests].resolve({ ok: true, summary: { ...mockSummary, gist: 'Old preferences' } });
+    await pause();
+    check(!document.querySelector('.zh-summary-gist')?.textContent.includes('Old preferences'), 'An old preference result cannot replace the current summary');
+    fixtureRequests[previousRequests + 1].resolve({ ok: true, summary: { ...mockSummary, gist: 'Astra summary' } });
+    await pause();
+    check(document.querySelector('.zh-summary-gist')?.textContent === 'Astra summary', 'The current preference summary renders');
+    settings({ summaryModel: 'gpt-6.1-sol' });
+    await pause();
+    check(fixtureRequests.length === previousRequests + 2 && document.querySelector('.zh-summary-gist')?.textContent === mockSummary.gist, 'Returning to previous preferences reuses their cached summary');
+    settings({ summaryFastMode: false });
+    await pause();
+    check(fixtureRequests.length === previousRequests + 3, 'Changing Fast mode uses a separate cache entry');
+    fixtureRequests.at(-1).resolve({ ok: true, summary: mockSummary });
+    await pause();
+    settings({ summaryWordThreshold: 250 });
+    await pause();
+    check(!document.querySelector('.zh-summary-card'), 'Raising the threshold removes an ineligible open email');
+    settings({ summaryWordThreshold: 200 });
+    await pause();
+    check(document.querySelector('.zh-summary-gist')?.textContent === mockSummary.gist && fixtureRequests.length === previousRequests + 3, 'Lowering the threshold restores the cached eligible summary');
+    settings({ summarizeEmails: false });
+    await pause();
+    check(!document.querySelector('.zh-summary-card'), 'Disabling the feature removes the pane');
+    report.textContent = `PASS: ${passed.length} DOM checks\n` + passed.map(label => `✓ ${label}`).join('\n');
+    report.dataset.result = 'pass';
+  } catch (error) {
+    settings({ summarizeEmails: false });
+    report.textContent = `FAIL: ${error.message}\n` + passed.join('\n');
+    report.dataset.result = 'fail';
+  }
+})();

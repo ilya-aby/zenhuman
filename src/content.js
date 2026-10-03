@@ -2,14 +2,6 @@
  * Zenhuman - A cleaner Superhuman experience
  */
 
-const DEFAULT_SETTINGS = {
-  removeRightPanel: true,
-  compactHeader: true,
-  hideHintTooltips: true,
-  simplerInboxZero: true,
-  hideAchievementPopups: true
-};
-
 function applySettings(settings) {
   const html = document.documentElement;
   html.classList.toggle('zh-hide-right-panel', settings.removeRightPanel);
@@ -17,14 +9,15 @@ function applySettings(settings) {
   html.classList.toggle('zh-hide-hint-tooltips', settings.hideHintTooltips);
   html.classList.toggle('zh-simpler-inbox-zero', settings.simplerInboxZero);
   html.classList.toggle('zh-hide-achievement-popups', settings.hideAchievementPopups);
+  html.classList.toggle('zh-summarize-emails', settings.summarizeEmails);
 }
 
 // Load settings and apply
-chrome.storage.sync.get(DEFAULT_SETTINGS, applySettings);
+chrome.storage.sync.get(ZH_DEFAULT_SETTINGS, applySettings);
 
 // React to settings changes in real-time
 chrome.storage.onChanged.addListener((changes, namespace) => {
   if (namespace === 'sync') {
-    chrome.storage.sync.get(DEFAULT_SETTINGS, applySettings);
+    chrome.storage.sync.get(ZH_DEFAULT_SETTINGS, applySettings);
   }
 });

@@ -1,0 +1,46 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Zenhuman DOM Regression Checks</title>
+<link rel="stylesheet" href="/src/styles.css">
+<style>body { background: #202125; color: #eee; font: 14px system-ui; margin: 24px; } .ThreadPaneView { width: 680px; } #report { white-space: pre-wrap; } [hidden] { display: none; }</style>
+<style>
+  /* Sender rules captured from Superhuman's Carbon theme, loaded after extension CSS. */
+  .MessagePane-expanded { background: white; }
+  .MessagePane-expanded .MessagePane-from { color: rgba(0, 0, 0, .8); }
+  .Theme-carbon .MessagePane-expanded { background: #363a40; }
+  .Theme-carbon .MessagePane-expanded .MessagePane-from { color: rgba(255, 255, 255, .8); }
+  .Theme-carbon .MessagePane-expanded.isMarketing { background: white; }
+  .MessagePane-emailHeader .ContactName { color: rgba(0, 0, 0, .8); }
+</style>
+<h1>Zenhuman DOM Regression Checks</h1>
+<p>Local fixture with mocked API responses. No personal email or API key is used.</p>
+<pre id="report">Running…</pre>
+<div class="ThreadPaneView isVisible Theme-carbon">
+  <span class="ThreadPane-subject">Fixture email</span>
+  <div class="MessagePane-expanded isFocus" id="message">
+    <div class="MessagePane-header"><div class="MessagePane-from MessagePane-header-from"><span class="ContactName-collapsed">Fixture sender</span></div></div>
+    <div class="MessagePane-iframe-wrapper"><div class="SandboxedRender Shadowbox" id="host"></div></div>
+  </div>
+</div>
+<script>
+  history.replaceState({}, '', '/inbox/thread/fixture');
+  const fixtureSettings = { summarizeEmails: true, summaryWordThreshold: 200 };
+  const fixtureListeners = [];
+  const fixtureRequests = [];
+  window.chrome = {
+    storage: {
+      sync: { get(defaults, callback) { callback({ ...defaults, ...fixtureSettings }); } },
+      onChanged: { addListener(callback) { fixtureListeners.push(callback); } }
+    },
+    runtime: { id: 'fixture', sendMessage(message) {
+      if (message.type === 'zh:cancel-prefetch') return Promise.resolve({ ok: true });
+      return new Promise(resolve => fixtureRequests.push({ message, resolve }));
+    } }
+  };
+  document.getElementById('host').attachShadow({mode:'open'}).innerHTML = '<div class="ShadowBody"></div>';
+</script>
+<script src="/src/settings.js"></script>
+<script src="/src/email-text.js"></script>
+<script src="/src/content.js"></script>
+<script src="/src/summary-pane.js"></script>
+<script src="/tests/browser.js"></script>

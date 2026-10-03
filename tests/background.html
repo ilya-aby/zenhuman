@@ -1,0 +1,36 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Zenhuman API Integration Checks</title>
+<style>body{background:#202125;color:#eee;font:14px system-ui;margin:24px}pre{white-space:pre-wrap}</style>
+<h1>Summary settings and API integration</h1>
+<p>Production background and request code with mocked Chrome storage and network. No real key or email.</p>
+<pre id="report">Running…</pre>
+<script src="/src/settings.js"></script>
+<script src="/src/summary-api.js"></script>
+<script src="/src/email-text.js"></script>
+<script>
+  const fixtureAPISettings = { summarizeEmails: true };
+  const fixtureSession = {};
+  const fixtureAPICalls = [];
+  let fixtureHandler;
+  let fixtureKey = 'sk-fixture-placeholder';
+  let fixtureResponse = null;
+  window.importScripts = () => {}; // Sources above are loaded explicitly; local-config is never loaded.
+  window.chrome = {
+    runtime: { id:'fixture', getURL:path => `chrome-extension://fixture/${path}`, onMessage:{ addListener:handler => { fixtureHandler=handler; } } },
+    storage: {
+      onChanged:{ addListener(){} },
+      sync:{ async get(defaults){return {...defaults,...fixtureAPISettings};} },
+      local:{ async setAccessLevel(){},async get(){return {openaiApiKey:fixtureKey};},async set(update){fixtureKey=update.openaiApiKey;} },
+      session:{ async setAccessLevel(){},async get(key){return key?{[key]:fixtureSession[key]}:{...fixtureSession};},async set(value){Object.assign(fixtureSession,value);},async remove(keys){keys.forEach(key=>delete fixtureSession[key]);} }
+    }
+  };
+  window.fetch=async (url, request)=> {
+    const body=JSON.parse(request.body);fixtureAPICalls.push(body);
+    if (fixtureResponse) return fixtureResponse;
+    const sequence=fixtureAPICalls.length;
+    return {ok:true,async json(){return {status:'completed',output:[{content:[{type:'output_text',text:JSON.stringify({gist:`Result ${sequence}`,points:[],actions:[]})}]}]};}};
+  };
+</script>
+<script src="/src/background.js"></script>
+<script src="/tests/background.js"></script>

@@ -11,6 +11,7 @@ A Chrome extension that gives Superhuman a cleaner, calmer interface.
 - **Hide tooltips** - Removes keyboard shortcut hints and notifications
 - **Simpler Inbox Zero** - Hides streak message, team button, referral/help/calendar icons on inbox zero screen
 - **Hide achievement popups** - Removes conversation-clearing milestone popups
+- **Summarize long emails** - Optional plain-English summaries for emails over 200 words, with caching and prefetch for nearby emails.
 
 ## Installation
 
@@ -19,6 +20,7 @@ A Chrome extension that gives Superhuman a cleaner, calmer interface.
 3. Enable "Developer mode" (top right)
 4. Click "Load unpacked" and select the extension folder
 5. Open Superhuman and click the extension icon to configure
+6. For summaries, add an OpenAI API key under **Summary settings → Change API key**, then enable **Summarize long emails**.
 
 ## License
 
