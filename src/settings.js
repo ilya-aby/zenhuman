@@ -14,9 +14,9 @@ const ZH_DEFAULT_SETTINGS = Object.freeze({
 /* One preference vocabulary for the popup, page cache, and API requests. */
 (function (root) {
   const models = Object.freeze({
-    'gpt-6-luna': 'Luna',
-    'gpt-6.1-sol': 'Sol 6.1',
-    'gpt-6-astra': 'Astra'
+    'gpt-6-luna': 'GPT-6 Luna',
+    'gpt-6.1-sol': 'GPT-6.1 Sol',
+    'gpt-6-astra': 'GPT-6 Astra'
   });
   function summaryOptions(settings = {}) {
     return {
