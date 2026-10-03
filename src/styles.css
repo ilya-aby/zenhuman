@@ -154,7 +154,13 @@ html.zh-summarize-emails .zh-summary-card {
   transform: rotate(225deg); transition: transform 150ms ease;
 }
 .zh-summary-toggle[aria-expanded="false"] .zh-summary-chevron { transform: rotate(45deg); }
-.zh-summary-content { padding: 0 18px 15px; }
+.zh-summary-content { padding: 0 18px 15px; cursor: default; }
+/* Override Superhuman's inherited selection lock for the summary text. */
+.zh-summary-content, .zh-summary-content * {
+  -webkit-user-select: text;
+  user-select: text;
+}
+.zh-summary-text { cursor: text; }
 .zh-summary-content[hidden] { display: none; }
 .zh-summary-card.is-loading .zh-summary-content { padding: 0; }
 .zh-summary-loading-label { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }

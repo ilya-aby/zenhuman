@@ -134,19 +134,27 @@
 
   function render(state, summary) {
     const { gist, points, actions } = summary;
-    state.body.replaceChildren(element('p', 'zh-summary-gist', gist));
+    const gistParagraph = element('p', 'zh-summary-gist');
+    gistParagraph.append(element('span', 'zh-summary-text', gist));
+    state.body.replaceChildren(gistParagraph);
     if (points.length) {
       const list = element('ul', 'zh-summary-points');
       points.forEach(point => {
         const item = element('li');
-        item.append(element('strong', 'zh-summary-point-label', `${point.label}: `), document.createTextNode(point.text));
+        const text = element('span', 'zh-summary-text');
+        text.append(element('strong', 'zh-summary-point-label', `${point.label}: `), document.createTextNode(point.text));
+        item.append(text);
         list.append(item);
       }); state.body.append(list);
     }
     if (actions.length) {
       const section = element('div', 'zh-summary-actions');
-      section.append(element('span', 'zh-summary-action-label', 'For you'));
-      actions.forEach(action => section.append(element('p', '', action))); state.body.append(section);
+      section.append(element('span', 'zh-summary-action-label zh-summary-text', 'For you'));
+      actions.forEach(action => {
+        const paragraph = element('p');
+        paragraph.append(element('span', 'zh-summary-text', action));
+        section.append(paragraph);
+      }); state.body.append(section);
     }
     state.body.setAttribute('aria-busy', 'false');
     state.card.classList.remove('is-loading');
