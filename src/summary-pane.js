@@ -239,7 +239,11 @@
   }
   chrome.storage.onChanged.addListener((changes, namespace) => {
     if (namespace === 'sync') chrome.storage.sync.get(ZH_DEFAULT_SETTINGS, apply);
-    if (namespace === 'local' && changes.openaiApiKey && current) load(current);
+  });
+  // Trusted credential storage does not send change events to content scripts.
+  chrome.runtime.onMessage.addListener((message, sender) => {
+    if (message?.type === 'zh:key-updated' && sender.id === chrome.runtime.id && !sender.tab &&
+        settings.summarizeEmails && current?.body.querySelector('.zh-summary-status')) load(current);
   });
   if (document.body) start(); else document.addEventListener('DOMContentLoaded', start, { once: true });
 })();

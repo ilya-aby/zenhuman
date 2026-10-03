@@ -66,6 +66,13 @@ function isPopup(sender) {
   return sender.id === chrome.runtime.id && sender.url === chrome.runtime.getURL('src/popup.html') && !sender.tab;
 }
 
+async function notifyKeyUpdated() {
+  try {
+    const tabs = await chrome.tabs.query({ url: 'https://mail.superhuman.com/*' });
+    await Promise.allSettled(tabs.map(tab => chrome.tabs.sendMessage(tab.id, { type: 'zh:key-updated' })));
+  } catch (_) { /* Saving a key still succeeds if no content script is reachable. */ }
+}
+
 async function summarize(message, sender) {
   if (sender.id !== chrome.runtime.id || !sender.tab || !sender.url?.startsWith('https://mail.superhuman.com/')) {
     throw new Error('Summaries are only available inside Superhuman.');
@@ -144,6 +151,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       await trustedStorageReady;
       if (typeof message.key !== 'string' || !/^sk-[A-Za-z0-9_-]{20,}$/.test(message.key)) throw new Error('Enter a valid OpenAI API key.');
       await chrome.storage.local.set({ openaiApiKey: message.key });
+      await notifyKeyUpdated();
     }
     return { ok: true, configured: Boolean(await getKey()) };
   })().then(sendResponse, error => sendResponse({ ok: false, error: error.message || 'Could not create a summary.' }));

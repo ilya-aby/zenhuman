@@ -27,12 +27,13 @@
   const fixtureSettings = { summarizeEmails: true, summaryWordThreshold: 200 };
   const fixtureListeners = [];
   const fixtureRequests = [];
+  const fixtureMessages = [];
   window.chrome = {
     storage: {
       sync: { get(defaults, callback) { callback({ ...defaults, ...fixtureSettings }); } },
       onChanged: { addListener(callback) { fixtureListeners.push(callback); } }
     },
-    runtime: { id: 'fixture', sendMessage(message) {
+    runtime: { id: 'fixture', onMessage: { addListener(callback) { fixtureMessages.push(callback); } }, sendMessage(message) {
       if (message.type === 'zh:cancel-prefetch') return Promise.resolve({ ok: true });
       return new Promise(resolve => fixtureRequests.push({ message, resolve }));
     } }

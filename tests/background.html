@@ -15,9 +15,11 @@
   let fixtureHandler;
   let fixtureKey = 'sk-fixture-placeholder';
   let fixtureResponse = null;
+  const fixtureKeyNotifications = [];
   window.importScripts = () => {}; // Sources above are loaded explicitly; local-config is never loaded.
   window.chrome = {
     runtime: { id:'fixture', getURL:path => `chrome-extension://fixture/${path}`, onMessage:{ addListener:handler => { fixtureHandler=handler; } } },
+    tabs: { async query(filter){if(filter.url!=='https://mail.superhuman.com/*')throw new Error('Unexpected target');return [{id:1}];},async sendMessage(id,message){fixtureKeyNotifications.push(message);} },
     storage: {
       onChanged:{ addListener(){} },
       sync:{ async get(defaults){return {...defaults,...fixtureAPISettings};} },

@@ -16,6 +16,10 @@
     check(!(await send({...message,text:'x'.repeat(120001)})).ok && fixtureAPICalls.length===0, 'Oversized input is rejected before a network request');
     fixtureKey='';
     check(!(await send()).ok && fixtureAPICalls.length===0, 'A missing key fails locally without a network request');
+    const savedKey = 'sk-'+'x'.repeat(24);
+    const saved = await send({type:'zh:set-key',key:savedKey},popup);
+    check(saved.ok && saved.configured && fixtureKey===savedKey && fixtureKeyNotifications.length===1 &&
+      JSON.stringify(fixtureKeyNotifications[0])==='{"type":"zh:key-updated"}', 'Saving a key succeeds and notifies Superhuman with no credential in the message');
     fixtureKey='sk-fixture-placeholder';
     const original = await send();
     const defaultCall = fixtureAPICalls[0];

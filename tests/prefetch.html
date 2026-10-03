@@ -18,7 +18,7 @@
   const fixtureSession={};
   const fixtureListeners=[];
   const fixtureCalls=[];
-  let fixtureHandler;
+  const fixtureHandlers=[];
   let fixtureHeld=false;
   window.importScripts=()=>{};
   window.chrome={storage:{
@@ -26,7 +26,7 @@
     onChanged:{addListener(fn){fixtureListeners.push(fn);}},
     local:{async setAccessLevel(){},async get(){return {openaiApiKey:'sk-test-only'};}},
     session:{async setAccessLevel(){},async get(key){return key?{[key]:fixtureSession[key]}:{...fixtureSession};},async set(value){Object.assign(fixtureSession,value);},async remove(keys){keys.forEach(k=>delete fixtureSession[k]);}}
-  },runtime:{id:'fixture',getURL:p=>`chrome-extension://fixture/${p}`,onMessage:{addListener(fn){fixtureHandler=fn;}},sendMessage(message){return new Promise(resolve=>fixtureHandler(message,{id:'fixture',tab:{id:1},url:'https://mail.superhuman.com/inbox/thread/fixture'},resolve));}}};
+  },runtime:{id:'fixture',getURL:p=>`chrome-extension://fixture/${p}`,onMessage:{addListener(fn){fixtureHandlers.push(fn);}},sendMessage(message){return new Promise(resolve=>fixtureHandlers.forEach(fn=>fn(message,{id:'fixture',tab:{id:1},url:'https://mail.superhuman.com/inbox/thread/fixture'},resolve)));}}};
   window.fetch=(url,request)=>new Promise((resolve,reject)=>{
     const body=JSON.parse(request.body);
     const subject=JSON.parse(body.input).subject;
