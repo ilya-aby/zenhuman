@@ -1,7 +1,8 @@
 {
   "manifest_version": 3,
+  "minimum_chrome_version": "116",
   "name": "Zenhuman",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A cleaner, calmer Superhuman experience",
   "icons": {
     "16": "assets/icon-zenhuman.png",
@@ -9,12 +10,19 @@
     "128": "assets/icon-zenhuman.png"
   },
   "permissions": ["storage"],
-  "host_permissions": ["https://mail.superhuman.com/*"],
+  "host_permissions": ["https://mail.superhuman.com/*", "https://api.openai.com/*"],
+  "background": { "service_worker": "src/background.js" },
   "content_scripts": [
     {
       "matches": ["https://mail.superhuman.com/*"],
+      "js": ["src/superhuman-cache.js"],
+      "world": "MAIN",
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["https://mail.superhuman.com/*"],
       "css": ["src/styles.css"],
-      "js": ["src/content.js"],
+      "js": ["src/settings.js", "src/email-text.js", "src/content.js", "src/summary-pane.js"],
       "run_at": "document_start"
     }
   ],

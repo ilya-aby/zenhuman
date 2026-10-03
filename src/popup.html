@@ -9,7 +9,7 @@
       font-size: 13px;
       margin: 0;
       padding: 0;
-      min-width: 280px;
+      width: 320px;
       background: #1a1a1a;
       color: #e0e0e0;
     }
@@ -47,7 +47,7 @@
       justify-content: space-between;
       padding: 6px 0;
     }
-        .setting-name {
+    .setting-name {
       font-weight: 500;
       color: #e0e0e0;
     }
@@ -57,7 +57,7 @@
       height: 20px;
       flex-shrink: 0;
     }
-    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle input { position: absolute; inset: 0; margin: 0; opacity: 0; width: 100%; height: 100%; z-index: 1; cursor: pointer; }
     .toggle-slider {
       position: absolute;
       cursor: pointer;
@@ -79,6 +79,24 @@
     }
     input:checked + .toggle-slider { background-color: #6366f1; }
     input:checked + .toggle-slider:before { transform: translateX(16px); }
+    input:focus-visible + .toggle-slider { outline: 2px solid #b7b9ff; outline-offset: 3px; }
+    .summary-section { border-top: 1px solid #2a2a2a; }
+    .description, .api-status { color: #999; font-size: 11px; line-height: 1.5; margin: 7px 0 12px; }
+    .field-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; margin: 12px 0; }
+    .field-row input { width: 76px; }
+    input[type="number"], input[type="password"], select { background: #252525; color: #eee; border: 1px solid #444; border-radius: 6px; padding: 7px; font: inherit; }
+    select { width: 142px; }
+    .summary-properties > summary { padding: 7px 0; color: #c2c2c2; font-size: 12px; }
+    .summary-properties-content { border-left: 2px solid #383838; padding-left: 12px; margin: 4px 0 0 3px; }
+    .summary-properties .setting-name { font-size: 12px; font-weight: 400; }
+    .threshold-value { display: flex; align-items: center; gap: 6px; color: #aaa; }
+    select:focus-visible, input[type="number"]:focus-visible, summary:focus-visible { outline: 2px solid #b7b9ff; outline-offset: 2px; }
+    details { margin-top: 10px; color: #aaa; font-size: 11px; }
+    summary { cursor: pointer; }
+    form { display: flex; gap: 6px; margin-top: 10px; }
+    input[type="password"] { width: 100%; min-width: 0; }
+    button { background: #6366f1; border: 0; border-radius: 6px; color: #fff; cursor: pointer; padding: 7px 10px; }
+    .api-status { margin-bottom: 0; }
   </style>
 </head>
 <body>
@@ -91,39 +109,82 @@
     <div class="setting">
       <span class="setting-name">Hide right panel</span>
       <label class="toggle">
-        <input type="checkbox" id="removeRightPanel">
+        <input type="checkbox" id="removeRightPanel" aria-label="Hide right panel">
         <span class="toggle-slider"></span>
       </label>
     </div>
     <div class="setting">
       <span class="setting-name">Compact email header</span>
       <label class="toggle">
-        <input type="checkbox" id="compactHeader">
+        <input type="checkbox" id="compactHeader" aria-label="Compact email header">
         <span class="toggle-slider"></span>
       </label>
     </div>
     <div class="setting">
       <span class="setting-name">Hide tooltips and popups</span>
       <label class="toggle">
-        <input type="checkbox" id="hideHintTooltips">
+        <input type="checkbox" id="hideHintTooltips" aria-label="Hide tooltips and popups">
         <span class="toggle-slider"></span>
       </label>
     </div>
     <div class="setting">
       <span class="setting-name">Simpler Inbox Zero</span>
       <label class="toggle">
-        <input type="checkbox" id="simplerInboxZero">
+        <input type="checkbox" id="simplerInboxZero" aria-label="Simpler Inbox Zero">
         <span class="toggle-slider"></span>
       </label>
     </div>
     <div class="setting">
       <span class="setting-name">Hide achievement popups</span>
       <label class="toggle">
-        <input type="checkbox" id="hideAchievementPopups">
+        <input type="checkbox" id="hideAchievementPopups" aria-label="Hide achievement popups">
         <span class="toggle-slider"></span>
       </label>
     </div>
   </div>
+  <div class="section summary-section">
+    <div class="section-title">Reading</div>
+    <div class="setting">
+      <span class="setting-name">Summarize long emails</span>
+      <label class="toggle">
+        <input type="checkbox" id="summarizeEmails" aria-label="Summarize long emails" aria-controls="summaryProperties">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <p class="description">A short summary above the email, in clear, simple English. Inspired by ASD-STE100.</p>
+    <details id="summaryProperties" class="summary-properties">
+      <summary>Summary settings</summary>
+      <div class="summary-properties-content">
+        <div class="setting">
+          <span class="setting-name">Fast mode</span>
+          <label class="toggle">
+            <input type="checkbox" id="summaryFastMode" aria-label="Fast mode">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <label class="field-row" for="summaryWordThreshold">For emails over
+          <span class="threshold-value"><input type="number" id="summaryWordThreshold" min="1" max="10000" step="1" aria-label="Summary word threshold"> words</span>
+        </label>
+        <label class="field-row" for="summaryModel">Model
+          <select id="summaryModel">
+            <option value="gpt-6-luna">GPT-6 Luna</option>
+            <option value="gpt-6.1-sol">GPT-6.1 Sol</option>
+            <option value="gpt-6-astra">GPT-6 Astra</option>
+          </select>
+        </label>
+        <p class="api-status" id="apiStatus" role="status">Checking API settings…</p>
+        <details>
+          <summary>Change API key</summary>
+          <form id="apiKeyForm">
+            <input type="password" id="openaiApiKey" placeholder="OpenAI API key" aria-label="OpenAI API key" autocomplete="off" required>
+            <button id="saveApiKey" type="submit">Save</button>
+          </form>
+          <p class="description">Stored on this computer only. Never synced with Chrome.</p>
+        </details>
+      </div>
+    </details>
+  </div>
+  <script src="settings.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>

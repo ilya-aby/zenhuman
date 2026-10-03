@@ -1,0 +1,50 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Zenhuman Prefetch Integration Checks</title>
+<link rel="stylesheet" href="/src/styles.css">
+<style>body{background:#202125;color:#eee;font:14px system-ui;margin:24px}pre{white-space:pre-wrap}.ThreadPaneView{width:680px}</style>
+<h1>Cached queue → bridge → summary prefetch</h1>
+<p>Synthetic Superhuman presenters with production bridge, extractor, pane, scheduler and cache. No real email or credentials.</p>
+<pre id="report">Running…</pre>
+<div class="ThreadPaneView isVisible"><span class="ThreadPane-subject">Current</span>
+  <div class="MessagePane-expanded isFocus" id="message"><div class="MessagePane-iframe-wrapper"><div class="Shadowbox" id="host"></div></div></div>
+</div>
+<script src="/src/settings.js"></script>
+<script src="/src/email-text.js"></script>
+<script src="/src/summary-api.js"></script>
+<script>
+  history.replaceState({},'', '/inbox/thread/current');
+  const fixtureSettings={summarizeEmails:true};
+  const fixtureSession={};
+  const fixtureListeners=[];
+  const fixtureCalls=[];
+  const fixtureHandlers=[];
+  let fixtureHeld=false;
+  window.importScripts=()=>{};
+  window.chrome={storage:{
+    sync:{get(defaults,callback){const result={...defaults,...fixtureSettings};if(callback)callback(result);return Promise.resolve(result);}},
+    onChanged:{addListener(fn){fixtureListeners.push(fn);}},
+    local:{async setAccessLevel(){},async get(){return {openaiApiKey:'sk-test-only'};}},
+    session:{async setAccessLevel(){},async get(key){return key?{[key]:fixtureSession[key]}:{...fixtureSession};},async set(value){Object.assign(fixtureSession,value);},async remove(keys){keys.forEach(k=>delete fixtureSession[k]);}}
+  },runtime:{id:'fixture',getURL:p=>`chrome-extension://fixture/${p}`,onMessage:{addListener(fn){fixtureHandlers.push(fn);}},sendMessage(message){return new Promise(resolve=>fixtureHandlers.forEach(fn=>fn(message,{id:'fixture',tab:{id:1},url:'https://mail.superhuman.com/inbox/thread/fixture'},resolve)));}}};
+  window.fetch=(url,request)=>new Promise((resolve,reject)=>{
+    const body=JSON.parse(request.body);
+    const subject=JSON.parse(body.input).subject;
+    const call={body,subject,finish(){resolve({ok:true,json:async()=>({status:'completed',output:[{content:[{type:'output_text',text:JSON.stringify({gist:subject,points:[],actions:[]})}]}]})});}};
+    fixtureCalls.push(call);
+    request.signal.addEventListener('abort',()=>reject(new DOMException('Aborted','AbortError')),{once:true});
+    if(!fixtureHeld)call.finish();
+  });
+  const fixtureHTML=id=>`<p>${id} ${'meaningful '.repeat(220)}</p><p style="display:none">hidden preheader</p><div class="sponsored">sponsor pitch</div><blockquote type="cite">quoted reply</blockquote><p>Unsubscribe</p>`;
+  const fixtureIds=['above','short','current','missing','below'];
+  const fixtureMap=new Map(fixtureIds.map(id=>[id,{id,metadata:{subject:id,messages:[{id}]},renders:id==='missing'?null:{[id]:{_raw:{unquotedHtml:id==='short'?'<p>Short email</p>':fixtureHTML(id)}}}}]));
+  const fixtureState={getThreadId:()=>fixtureProps.threadId,threadListState:{getRank:id=>fixtureIds.indexOf(id),getByRank:rank=>fixtureIds[rank]?{id:fixtureIds[rank]}:null}};
+  const fixtureProps={account:{threads:{identityMap:fixtureMap}},viewState:fixtureState,messageId:'current',threadId:'current'};
+  document.getElementById('message').__reactInternalInstance$fixture={memoizedProps:fixtureProps};
+  const fixtureBody=document.getElementById('host').attachShadow({mode:'open'});
+  fixtureBody.innerHTML='<div class="ShadowBody">'+fixtureHTML('current')+'</div>';
+</script>
+<script src="/src/background.js"></script>
+<script src="/src/superhuman-cache.js"></script>
+<script src="/src/summary-pane.js"></script>
+<script src="/tests/prefetch.js"></script>

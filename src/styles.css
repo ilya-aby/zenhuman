@@ -33,6 +33,15 @@ html.zh-hide-right-panel .ActionPane-floating-clickable {
   position: absolute !important;
 }
 
+/* The floating back button occupies 2rem + 32px from the pane's left edge.
+ * Reserve its full hit area and an 8px gap when the centered header runs out
+ * of left gutter. Use the pane width, including with the AI sidebar open. */
+@container thread-pane-view (max-width: 864px) {
+  html.zh-hide-right-panel .ThreadPane-header {
+    padding-left: calc(2rem + 40px) !important;
+  }
+}
+
 /* Compact email header: hide unsubscribe button, smaller subject */
 html.zh-compact-header .ThreadPane-header-status {
   display: none !important;
@@ -112,4 +121,69 @@ html.zh-simpler-inbox-zero .Footer-actions-bar {
 
 html.zh-simpler-inbox-zero .Footer-actions {
   margin-left: auto !important;
+}
+
+/* A quiet, collapsible card immediately above the focused email body. */
+/* Carbon keeps newsletters white but gives their collapsed sender a white foreground. */
+html.zh-summarize-emails .Theme-carbon .MessagePane-expanded.isMarketing > .MessagePane-header .MessagePane-header-from,
+html.zh-summarize-emails.Theme-carbon .MessagePane-expanded.isMarketing > .MessagePane-header .MessagePane-header-from {
+  color: rgba(0, 0, 0, 0.8);
+}
+/* Keep the original email from pulling the new card above the viewport as it grows. */
+html.zh-summarize-emails .ThreadPane-messages,
+html.zh-summarize-emails .ThreadPane-messages .simplebar-content-wrapper { overflow-anchor: none; }
+.zh-summary-card { display: none; }
+html.zh-summarize-emails .zh-summary-card {
+  display: block; color: #e8e8eb; background: #2b2c31; border: 1px solid #42434d;
+  border-radius: 10px; margin: 12px 24px 20px;
+  font: 14px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; text-align: left;
+}
+.zh-summary-toggle {
+  display: flex; align-items: center; gap: 8px; width: 100%; padding: 13px 16px;
+  border: 0; border-radius: 10px; background: transparent; color: inherit; font: inherit;
+  font-size: 12px; font-weight: 600; text-align: left; cursor: pointer;
+}
+.zh-summary-toggle:focus-visible, .zh-summary-retry:focus-visible { outline: 2px solid #b4b7ed; outline-offset: 2px; }
+.zh-summary-mark { display: inline-block; color: #8caaff; font-size: 16px; line-height: 1; }
+.zh-summary-card.is-loading .zh-summary-mark { animation: zh-summary-spin 3.6s linear infinite; }
+@keyframes zh-summary-spin { to { transform: rotate(360deg); } }
+.zh-summary-meta { color: #9697a2; font-size: 11px; font-weight: 400; margin-left: auto; }
+.zh-summary-chevron {
+  flex: none; width: 7px; height: 7px; margin-left: 7px;
+  border-right: 1.8px solid #9697a2; border-bottom: 1.8px solid #9697a2;
+  transform: rotate(225deg); transition: transform 150ms ease;
+}
+.zh-summary-toggle[aria-expanded="false"] .zh-summary-chevron { transform: rotate(45deg); }
+.zh-summary-content { padding: 0 18px 15px; }
+.zh-summary-content[hidden] { display: none; }
+.zh-summary-card.is-loading .zh-summary-content { padding: 0; }
+.zh-summary-loading-label { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.zh-summary-gist { margin: 0 0 14px; font-weight: 450; }
+.zh-summary-points { margin: 0; padding-left: 18px; color: #c9c9d1; line-height: 1.6; }
+.zh-summary-points li { margin: 9px 0; padding-left: 3px; }
+.zh-summary-points li:last-child { margin-bottom: 0; }
+.zh-summary-point-label { color: #e8e8eb; font-weight: 600; }
+.zh-summary-points li::marker { color: #858692; }
+.zh-summary-status { margin: 0; color: #aaaab6; font-size: 13px; }
+.zh-summary-actions { border-top: 1px solid #42434d; margin-top: 13px; padding-top: 11px; }
+.zh-summary-action-label { color: #b4b7ed; font-size: 11px; font-weight: 600; }
+.zh-summary-actions p { margin: 4px 0; }
+.zh-summary-retry { margin-top: 10px; color: #c7c9ff; background: transparent; border: 1px solid #5a5c79; border-radius: 5px; padding: 5px 9px; cursor: pointer; }
+html.zh-summarize-emails.Theme-snow .zh-summary-card,
+html.zh-summarize-emails .Theme-snow .zh-summary-card { color: #24242d; background: #f5f5fa; border-color: #dedee9; }
+html.zh-summarize-emails.Theme-snow .zh-summary-points,
+html.zh-summarize-emails .Theme-snow .zh-summary-points { color: #494955; }
+html.zh-summarize-emails.Theme-snow .zh-summary-point-label,
+html.zh-summarize-emails .Theme-snow .zh-summary-point-label { color: #24242d; }
+html.zh-summarize-emails.Theme-snow .zh-summary-mark,
+html.zh-summarize-emails .Theme-snow .zh-summary-mark { color: #506ec2; }
+html.zh-summarize-emails.Theme-snow .zh-summary-status,
+html.zh-summarize-emails .Theme-snow .zh-summary-status { color: #626272; }
+@media (prefers-reduced-motion: reduce) {
+  .zh-summary-card.is-loading .zh-summary-mark { animation: none; }
+  .zh-summary-chevron { transition: none; }
+}
+@media (max-width: 600px) {
+  html.zh-summarize-emails .zh-summary-card { margin-left: 12px; margin-right: 12px; }
+  .zh-summary-meta { display: none; } .zh-summary-chevron { margin-left: auto; }
 }
