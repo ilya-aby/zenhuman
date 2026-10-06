@@ -16,6 +16,12 @@
     check(getComputedStyle(sender).color === 'rgba(255, 255, 255, 0.8)', 'Ordinary Carbon emails retain their light sender on a dark background');
     message.classList.add('isMarketing');
     check(getComputedStyle(sender).color === 'rgba(0, 0, 0, 0.8)' && getComputedStyle(message).backgroundColor === 'rgb(255, 255, 255)', 'Collapsed newsletter sender stays readable on white, before a summary exists');
+    settings({ summarizeEmails: false });
+    check(getComputedStyle(sender).color === 'rgba(0, 0, 0, 0.8)', 'Sender visibility fix works with summaries disabled');
+    settings({ fixInvisibleSender: false });
+    check(getComputedStyle(sender).color === 'rgba(255, 255, 255, 0.8)', 'Disabling the sender fix restores native sender colors');
+    settings({ fixInvisibleSender: true, summarizeEmails: true });
+    check(getComputedStyle(sender).color === 'rgba(0, 0, 0, 0.8)', 'Re-enabling the sender fix restores newsletter contrast');
     message.querySelector('.MessagePane-header').insertAdjacentHTML('beforeend', '<div class="MessagePane-emailHeader"><span class="ContactName">Expanded sender</span></div>');
     check(getComputedStyle(message.querySelector('.MessagePane-emailHeader .ContactName')).color === 'rgba(0, 0, 0, 0.8)', 'Expanded From and To header colors remain unchanged');
     body.innerHTML = '<style>.hidden { display: none; }</style><p class="hidden">secret preheader</p><p>Useful content with <a href="#">a meaningful link</a>.</p><div class="sponsored">Buy an advertisement</div><blockquote type="cite">Old quoted reply</blockquote><p>View in browser</p><footer>Payment is due Friday.</footer>';

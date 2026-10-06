@@ -123,12 +123,12 @@ html.zh-simpler-inbox-zero .Footer-actions {
   margin-left: auto !important;
 }
 
-/* A quiet, collapsible card immediately above the focused email body. */
 /* Carbon keeps newsletters white but gives their collapsed sender a white foreground. */
-html.zh-summarize-emails .Theme-carbon .MessagePane-expanded.isMarketing > .MessagePane-header .MessagePane-header-from,
-html.zh-summarize-emails.Theme-carbon .MessagePane-expanded.isMarketing > .MessagePane-header .MessagePane-header-from {
+html.zh-fix-invisible-sender .Theme-carbon .MessagePane-expanded.isMarketing > .MessagePane-header .MessagePane-header-from,
+html.zh-fix-invisible-sender.Theme-carbon .MessagePane-expanded.isMarketing > .MessagePane-header .MessagePane-header-from {
   color: rgba(0, 0, 0, 0.8);
 }
+/* A quiet, collapsible card immediately above the focused email body. */
 /* Keep the original email from pulling the new card above the viewport as it grows. */
 html.zh-summarize-emails .ThreadPane-messages,
 html.zh-summarize-emails .ThreadPane-messages .simplebar-content-wrapper { overflow-anchor: none; }

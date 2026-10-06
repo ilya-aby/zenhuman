@@ -12,6 +12,7 @@ function applySettings(settings) {
   html.classList.toggle('zh-summarize-emails', settings.summarizeEmails);
   html.classList.toggle('zh-fit-wide-emails', settings.fitWideEmails);
   html.classList.toggle('zh-fix-subject-overlap', settings.fixSubjectOverlap);
+  html.classList.toggle('zh-fix-invisible-sender', settings.fixInvisibleSender);
 }
 
 // Load settings and apply
