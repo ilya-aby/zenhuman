@@ -10,6 +10,8 @@ function applySettings(settings) {
   html.classList.toggle('zh-simpler-inbox-zero', settings.simplerInboxZero);
   html.classList.toggle('zh-hide-achievement-popups', settings.hideAchievementPopups);
   html.classList.toggle('zh-summarize-emails', settings.summarizeEmails);
+  html.classList.toggle('zh-fit-wide-emails', settings.fitWideEmails);
+  html.classList.toggle('zh-fix-subject-overlap', settings.fixSubjectOverlap);
 }
 
 // Load settings and apply

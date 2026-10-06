@@ -37,7 +37,7 @@ html.zh-hide-right-panel .ActionPane-floating-clickable {
  * Reserve its full hit area and an 8px gap when the centered header runs out
  * of left gutter. Use the pane width, including with the AI sidebar open. */
 @container thread-pane-view (max-width: 864px) {
-  html.zh-hide-right-panel .ThreadPane-header {
+  html.zh-fix-subject-overlap .ThreadPane-header {
     padding-left: calc(2rem + 40px) !important;
   }
 }

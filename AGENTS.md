@@ -30,6 +30,7 @@ This is a vanilla JavaScript Chrome extension with no build step or dependencies
 - `src/popup.html` / `src/popup.js` - Extension popup UI for settings
 - `src/settings.js` - Shared defaults; summaries start disabled
 - `src/email-text.js` - Extracts email text from shadow roots or legacy iframes
+- `src/email-fit.js` - Fits overflowing shadow-DOM newsletters to the reading pane
 - `src/summary-pane.js` - Focused-message detection, inline card, and navigation lifecycle
 - `src/background.js` / `src/summary-api.js` - OpenAI requests, prompt, validation, and session cache
 - `src/superhuman-cache.js` - MAIN-world adapter for cached presenters and queue neighbors; never invokes email loading or navigation
@@ -40,11 +41,13 @@ All CSS modifications use classes prefixed with `zh-` (e.g., `zh-hide-right-pane
 
 ## Current Features
 
-- `removeRightPanel` - Hides contact enrichment sidebar; reserves a back-button gutter in narrow email headers so the arrow and subject cannot overlap
+- `removeRightPanel` - Hides contact enrichment sidebar
 - `compactHeader` - Smaller email headers, hides share/navigation buttons
 - `hideHintTooltips` - Hides keyboard shortcut hints and notifications
 - `simplerInboxZero` - Hides streak message, team button, referral/help/calendar icons on inbox zero screen
 - `hideAchievementPopups` - Hides achievement popups like conversation-clearing milestones
+- `fitWideEmails` - Scales overflowing newsletters to the reading pane (default on); preserves their layout, but also reduces text size. Leaves fitting and non-marketing emails unchanged, responds to pane resizing and image loads, and restores the original size when disabled.
+- `fixSubjectOverlap` - Reserves a back-button gutter in narrow email headers so the arrow and subject cannot overlap (default on). This and `fitWideEmails` have independent toggles under **Bug fixes**, separate from cleanup and summary settings.
 - `summarizeEmails` - Collapsible plain-English summaries above focused emails over `summaryWordThreshold` words (default 200), using a choice of GPT-6 Luna, GPT-6.1 Sol (default), or GPT-6 Astra and the spirit of ASD-STE100. A nested settings menu offers Fast mode (default on), word threshold (default 200), and model selection. The prompt selects substantive takeaways before preserving their detail, omits peripheral author/publication metadata unless central, and uses up to five points without a filler quota. Points have short bold topic labels; summary text supports normal selection and copying. The header reads "Summarizing..." while loading and "Summary" when ready; loading uses a compact rotating header sparkle with reduced-motion support.
 - **Cached queue prefetch** (automatic when summaries are enabled) - Prepares the next eligible cached message in each direction while reading. `src/superhuman-cache.js` runs in MAIN world and reads existing presenters/queue ranks only; no load methods, email navigation, or read-status changes. Scans at most five neighbors each way, skips missing bodies/drafts/removed conversations, and falls back to DOM summaries if internals change. Prefetch sends unread neighbor content to OpenAI and can incur charges even if those emails are never opened. The background allows one speculative request at a time, reserves foreground capacity, and deduplicates/promotes matching foreground requests.
 

@@ -80,7 +80,7 @@
     input:checked + .toggle-slider { background-color: #6366f1; }
     input:checked + .toggle-slider:before { transform: translateX(16px); }
     input:focus-visible + .toggle-slider { outline: 2px solid #b7b9ff; outline-offset: 3px; }
-    .summary-section { border-top: 1px solid #2a2a2a; }
+    .section + .section { border-top: 1px solid #2a2a2a; }
     .description, .api-status { color: #999; font-size: 11px; line-height: 1.5; margin: 7px 0 12px; }
     .field-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; margin: 12px 0; }
     .field-row input { width: 76px; }
@@ -138,6 +138,23 @@
       <span class="setting-name">Hide achievement popups</span>
       <label class="toggle">
         <input type="checkbox" id="hideAchievementPopups" aria-label="Hide achievement popups">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+  </div>
+  <div class="section bug-fixes-section">
+    <div class="section-title">Bug fixes</div>
+    <div class="setting">
+      <span class="setting-name">Fit wide newsletters</span>
+      <label class="toggle">
+        <input type="checkbox" id="fitWideEmails" aria-label="Fit wide newsletters">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="setting">
+      <span class="setting-name">Fix subject line overlap</span>
+      <label class="toggle">
+        <input type="checkbox" id="fixSubjectOverlap" aria-label="Fix subject line overlap">
         <span class="toggle-slider"></span>
       </label>
     </div>

@@ -5,6 +5,8 @@ const ZH_DEFAULT_SETTINGS = Object.freeze({
   hideHintTooltips: true,
   simplerInboxZero: true,
   hideAchievementPopups: true,
+  fitWideEmails: true,
+  fixSubjectOverlap: true,
   summarizeEmails: false,
   summaryWordThreshold: 200,
   summaryFastMode: true,

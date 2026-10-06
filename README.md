@@ -11,6 +11,8 @@ A Chrome extension that gives Superhuman a cleaner, calmer interface.
 - **Hide tooltips** - Removes keyboard shortcut hints and notifications
 - **Simpler Inbox Zero** - Hides streak message, team button, referral/help/calendar icons on inbox zero screen
 - **Hide achievement popups** - Removes conversation-clearing milestone popups
+- **Fit wide newsletters** - Scales oversized newsletters to the reading pane.
+- **Fix subject overlap** - Keeps narrow subject lines clear of the back arrow. Both fixes have separate toggles under **Bug fixes**.
 - **Summarize long emails** - Optional plain-English summaries for emails over 200 words, with selectable text, caching and prefetch for nearby emails.
 
 ## Installation

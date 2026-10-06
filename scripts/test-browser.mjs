@@ -10,9 +10,11 @@ const files = new Map([
   ['/tests/background.js', ['../tests/background.js', 'text/javascript']],
   ['/tests/prefetch.html', ['../tests/prefetch.html', 'text/html']],
   ['/tests/prefetch.js', ['../tests/prefetch.js', 'text/javascript']],
+  ['/tests/email-fit.html', ['../tests/email-fit.html', 'text/html']],
+  ['/tests/email-fit.js', ['../tests/email-fit.js', 'text/javascript']],
   ['/popup', ['../src/popup.html', 'text/html']],
   ['/assets/icon-zenhuman.png', ['../assets/icon-zenhuman.png', 'image/png']],
-  ...['settings.js', 'email-text.js', 'content.js', 'summary-pane.js', 'summary-api.js', 'background.js', 'popup.js', 'superhuman-cache.js'].map(name => [`/src/${name}`, [`../src/${name}`, 'text/javascript']]),
+  ...['settings.js', 'email-text.js', 'content.js', 'summary-pane.js', 'summary-api.js', 'background.js', 'popup.js', 'superhuman-cache.js', 'email-fit.js'].map(name => [`/src/${name}`, [`../src/${name}`, 'text/javascript']]),
   ['/src/styles.css', ['../src/styles.css', 'text/css']]
 ]);
 createServer((request, response) => {

@@ -22,7 +22,7 @@
     {
       "matches": ["https://mail.superhuman.com/*"],
       "css": ["src/styles.css"],
-      "js": ["src/settings.js", "src/email-text.js", "src/content.js", "src/summary-pane.js"],
+      "js": ["src/settings.js", "src/email-text.js", "src/content.js", "src/summary-pane.js", "src/email-fit.js"],
       "run_at": "document_start"
     }
   ],

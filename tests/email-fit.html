@@ -1,0 +1,34 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Zenhuman Newsletter Fit Checks</title>
+<style>
+  body { background: #202125; color: #eee; font: 14px system-ui; margin: 24px; }
+  #report { white-space: pre-wrap; }
+  .MessagePane-expanded { width: 636px; margin: 20px 0; }
+  .summary { margin: 0 0 12px; }
+</style>
+<h1>Zenhuman Newsletter Fit Checks</h1>
+<p>Synthetic newsletters. No personal email or network requests.</p>
+<pre id="report">Running…</pre>
+<div class="ThreadPaneView isVisible">
+  <div class="MessagePane-expanded isMarketing" id="wide">
+    <p class="summary">Summary stays at its original size.</p>
+    <div class="SandboxedRender"></div>
+  </div>
+  <div class="MessagePane-expanded isMarketing" id="fitting"><div class="SandboxedRender"></div></div>
+  <div class="MessagePane-expanded" id="ordinary"><div class="SandboxedRender"></div></div>
+</div>
+<script>
+  document.documentElement.classList.add('zh-fit-wide-emails');
+  function newsletter(id, width) {
+    const host = document.querySelector(`#${id} .SandboxedRender`);
+    host.attachShadow({mode:'open'}).innerHTML = `<style>.ShadowBody { overflow-x:auto; } table { border-collapse:collapse; font:16px system-ui; color:#222; background:white; } td { padding:16px; }</style><div class="ShadowBody"><div class="ShadowWrapper"><table width="${width}"><tr><td>Left column</td><td>Right column</td></tr></table></div></div>`;
+    return host.shadowRoot.querySelector('.ShadowBody');
+  }
+  const wideBody = newsletter('wide', 874);
+  const fittingBody = newsletter('fitting', 400);
+  const ordinaryBody = newsletter('ordinary', 874);
+  const summaryHeight = document.querySelector('.summary').getBoundingClientRect().height;
+</script>
+<script src="/src/email-fit.js"></script>
+<script src="/tests/email-fit.js"></script>
