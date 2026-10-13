@@ -34,7 +34,6 @@ This is a vanilla JavaScript Chrome extension with no build step or dependencies
 - `src/summary-pane.js` - Focused-message detection, inline card, and navigation lifecycle
 - `src/background.js` / `src/summary-api.js` - OpenAI requests, prompt, validation, and session cache
 - `src/superhuman-cache.js` - MAIN-world adapter for cached presenters and queue neighbors; never invokes email loading or navigation
-- `src/local-config.js` - Ignored personal API configuration; never read, print, commit, or distribute
 
 **CSS Class Convention:**
 All CSS modifications use classes prefixed with `zh-` (e.g., `zh-hide-right-panel`, `zh-compact-header`, `zh-hide-hint-tooltips`) applied to the document root element.
@@ -53,7 +52,8 @@ All CSS modifications use classes prefixed with `zh-` (e.g., `zh-hide-right-pane
 - **Cached queue prefetch** (automatic when summaries are enabled) - Prepares the next eligible cached message in each direction while reading. `src/superhuman-cache.js` runs in MAIN world and reads existing presenters/queue ranks only; no load methods, email navigation, or read-status changes. Scans at most five neighbors each way, skips missing bodies/drafts/removed conversations, and falls back to DOM summaries if internals change. Prefetch sends unread neighbor content to OpenAI and can incur charges even if those emails are never opened. The background allows one speculative request at a time, reserves foreground capacity, and deduplicates/promotes matching foreground requests.
 
 **Summary Settings and Credentials:**
-- Toggles, model selection, and word threshold use `chrome.storage.sync`. Credentials use trusted extension contexts only, in `chrome.storage.local` or ignored `src/local-config.js`.
+- Run `node tests/service-worker.mjs` to check fresh-install worker imports and the mocked settings/request/cache flow without a browser or real credentials.
+- Toggles, model selection, and word threshold use `chrome.storage.sync`. Credentials use trusted extension contexts only, in `chrome.storage.local`. The worker imports only packaged scripts; the legacy `src/local-config.js` fallback is no longer loaded, preventing missing-script errors on fresh installs. Never read, print, commit, or distribute any existing personal config file.
 - Configure an API key through **Summary settings → Change API key** in the extension popup. Saving the key retries an open summary error through a credential-free notification; no reload is required.
 - Requests time out after 25 seconds, before Chrome's 30-second service-worker fetch limit.
 - Email text is sent only to the OpenAI Responses API when summaries are enabled. Requests use `store: false`; summaries are cached in `chrome.storage.session` until the browser session ends, with an in-page cache for immediate revisits. Both caches separate model and speed choices; preference changes refresh the focused email. Bump `PROMPT_VERSION` when changing the prompt to invalidate older summaries.

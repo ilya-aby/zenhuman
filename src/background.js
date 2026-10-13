@@ -1,6 +1,4 @@
 importScripts('settings.js', 'summary-api.js', 'email-text.js');
-// Legacy personal installation fallback, ignored by Git.
-try { importScripts('local-config.js'); } catch (_) { /* Configure a key in the popup instead. */ }
 
 const trustedStorageReady = Promise.all([
   chrome.storage.local.setAccessLevel({ accessLevel: 'TRUSTED_CONTEXTS' }),
@@ -59,7 +57,7 @@ function cancelPrefetch(tabId) {
 async function getKey() {
   await trustedStorageReady;
   const { openaiApiKey } = await chrome.storage.local.get('openaiApiKey');
-  return openaiApiKey || globalThis.ZENHUMAN_LOCAL_CONFIG?.openaiApiKey || '';
+  return openaiApiKey || '';
 }
 
 function isPopup(sender) {

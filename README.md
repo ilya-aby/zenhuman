@@ -14,7 +14,7 @@ A Chrome extension that gives Superhuman a cleaner, calmer interface.
 - **Fit wide newsletters** - Scales oversized newsletters to the reading pane.
 - **Fix subject overlap** - Keeps narrow subject lines clear of the back arrow.
 - **Fix invisible sender** - Restores sender visibility on white newsletters. These fixes have separate toggles under **Bug fixes**.
-- **Summarize long emails** - Optional plain-English summaries for emails over 200 words, with selectable text, caching and prefetch for nearby emails.
+- **Summarize long emails** - Optional plain-English summaries for emails over 200 words, with selectable text, caching and prefetch for nearby emails. API keys are configured in the popup and saved locally in Chrome; no `local-config.js` file is needed. If you previously used that file, save your key through the popup instead.
 
 ## Installation
 
