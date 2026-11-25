@@ -138,22 +138,40 @@ html.zh-summarize-emails .zh-summary-card {
   border-radius: 10px; margin: 12px 24px 20px;
   font: 14px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; text-align: left;
 }
+.zh-summary-header { display: flex; align-items: center; gap: 4px; padding: 7px 9px 7px 16px; }
 .zh-summary-toggle {
-  display: flex; align-items: center; gap: 8px; width: 100%; padding: 13px 16px;
-  border: 0; border-radius: 10px; background: transparent; color: inherit; font: inherit;
+  display: flex; align-items: center; align-self: stretch; gap: 8px; flex: 1; min-width: 0; padding: 0;
+  border: 0; background: transparent; color: inherit; font: inherit;
   font-size: 12px; font-weight: 600; text-align: left; cursor: pointer;
 }
-.zh-summary-toggle:focus-visible, .zh-summary-retry:focus-visible { outline: 2px solid #b4b7ed; outline-offset: 2px; }
+.zh-summary-control {
+  position: relative; display: grid; place-items: center; flex: none;
+  width: 28px; height: 28px; border-radius: 6px;
+}
+.zh-summary-close {
+  padding: 0; border: 0; background: transparent; color: inherit; cursor: pointer;
+}
+.zh-summary-toggle:hover .zh-summary-chevron, .zh-summary-close:hover { background: rgba(127, 127, 127, 0.16); }
+.zh-summary-toggle:focus-visible { outline: none; }
+.zh-summary-toggle:focus-visible .zh-summary-chevron, .zh-summary-close:focus-visible {
+  outline: 2px solid var(--zh-summary-control-focus, #a5a5de); outline-offset: -2px;
+}
+.zh-summary-retry:focus-visible { outline: 2px solid #b4b7ed; outline-offset: 2px; }
 .zh-summary-mark { display: inline-block; color: #8caaff; font-size: 16px; line-height: 1; }
 .zh-summary-card.is-loading .zh-summary-mark { animation: zh-summary-spin 3.6s linear infinite; }
 @keyframes zh-summary-spin { to { transform: rotate(360deg); } }
 .zh-summary-meta { color: #9697a2; font-size: 11px; font-weight: 400; margin-left: auto; }
-.zh-summary-chevron {
-  flex: none; width: 7px; height: 7px; margin-left: 7px;
-  border-right: 1.8px solid #9697a2; border-bottom: 1.8px solid #9697a2;
-  transform: rotate(225deg); transition: transform 150ms ease;
+.zh-summary-chevron::before, .zh-summary-close::before, .zh-summary-close::after { content: ''; opacity: 0.72; }
+.zh-summary-chevron::before {
+  box-sizing: border-box; width: 8px; height: 8px;
+  border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  transform: translateY(1px) rotate(225deg); transition: transform 150ms ease;
 }
-.zh-summary-toggle[aria-expanded="false"] .zh-summary-chevron { transform: rotate(45deg); }
+.zh-summary-toggle[aria-expanded="false"] .zh-summary-chevron::before { transform: translateY(-1px) rotate(45deg); }
+.zh-summary-close::before, .zh-summary-close::after {
+  grid-area: 1 / 1; width: 12px; border-top: 2px solid currentColor; transform: rotate(45deg);
+}
+.zh-summary-close::after { transform: rotate(-45deg); }
 .zh-summary-content { padding: 0 18px 15px; cursor: default; }
 /* Override Superhuman's inherited selection lock for the summary text. */
 .zh-summary-content, .zh-summary-content * {
@@ -176,7 +194,10 @@ html.zh-summarize-emails .zh-summary-card {
 .zh-summary-actions p { margin: 4px 0; }
 .zh-summary-retry { margin-top: 10px; color: #c7c9ff; background: transparent; border: 1px solid #5a5c79; border-radius: 5px; padding: 5px 9px; cursor: pointer; }
 html.zh-summarize-emails.Theme-snow .zh-summary-card,
-html.zh-summarize-emails .Theme-snow .zh-summary-card { color: #24242d; background: #f5f5fa; border-color: #dedee9; }
+html.zh-summarize-emails .Theme-snow .zh-summary-card {
+  --zh-summary-control-focus: #625da8;
+  color: #24242d; background: #f5f5fa; border-color: #dedee9;
+}
 html.zh-summarize-emails.Theme-snow .zh-summary-points,
 html.zh-summarize-emails .Theme-snow .zh-summary-points { color: #494955; }
 html.zh-summarize-emails.Theme-snow .zh-summary-point-label,
@@ -187,9 +208,13 @@ html.zh-summarize-emails.Theme-snow .zh-summary-status,
 html.zh-summarize-emails .Theme-snow .zh-summary-status { color: #626272; }
 @media (prefers-reduced-motion: reduce) {
   .zh-summary-card.is-loading .zh-summary-mark { animation: none; }
-  .zh-summary-chevron { transition: none; }
+  .zh-summary-chevron::before { transition: none; }
 }
 @media (max-width: 600px) {
   html.zh-summarize-emails .zh-summary-card { margin-left: 12px; margin-right: 12px; }
   .zh-summary-meta { display: none; } .zh-summary-chevron { margin-left: auto; }
+}
+
+@media print {
+  html.zh-summarize-emails .zh-summary-card { display: none !important; }
 }

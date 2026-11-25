@@ -75,7 +75,7 @@ async function summarize(message, sender) {
   if (sender.id !== chrome.runtime.id || !sender.tab || !sender.url?.startsWith('https://mail.superhuman.com/')) {
     throw new Error('Summaries are only available inside Superhuman.');
   }
-  const settings = await chrome.storage.sync.get(ZH_DEFAULT_SETTINGS);
+  const settings = await chrome.storage.sync.get(ZenhumanSettings.storageDefaults);
   if (!settings.summarizeEmails) throw new Error('Enable email summaries in Zenhuman settings.');
   const text = message.text;
   if (typeof text !== 'string' || text.length > 120000 || typeof message.subject !== 'string' || message.subject.length > 1000) {
@@ -103,7 +103,7 @@ async function summarize(message, sender) {
   job.promise = new Promise((resolve, reject) => { job.resolve = resolve; job.reject = reject; });
   job.run = async signal => {
     try {
-      const latest = await chrome.storage.sync.get(ZH_DEFAULT_SETTINGS);
+      const latest = await chrome.storage.sync.get(ZenhumanSettings.storageDefaults);
       if (!latest.summarizeEmails || ZenhumanSettings.summaryKey(latest) !== preferencesKey ||
           ZenhumanEmailText.countWords(text) <= Math.min(10000, Math.max(1, Number(latest.summaryWordThreshold) || 200))) {
         throw new Error('Summary settings changed.');

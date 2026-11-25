@@ -1,5 +1,5 @@
 (function (root) {
-  const MODEL = 'gpt-6.1-sol';
+  const MODEL = 'gpt-6.2-sol';
   const PROMPT_VERSION = '5';
   const preferences = root.ZenhumanSettings || (typeof module !== 'undefined' ? require('./settings.js') : null);
   const INSTRUCTIONS = `Summarize the meaningful content of one email for its reader.
@@ -22,7 +22,7 @@ Return only the required JSON structure.`;
     const options = preferences.summaryOptions(settings);
     return {
       model: options.summaryModel,
-      service_tier: options.summaryFastMode ? 'fast' : 'default',
+      service_tier: options.summarySpeed === 'normal' ? 'default' : options.summarySpeed,
       store: false,
       reasoning: { effort: 'low' },
       max_output_tokens: 3000,

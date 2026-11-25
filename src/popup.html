@@ -179,22 +179,14 @@
     <details id="summaryProperties" class="summary-properties">
       <summary>Summary settings</summary>
       <div class="summary-properties-content">
-        <div class="setting">
-          <span class="setting-name">Fast mode</span>
-          <label class="toggle">
-            <input type="checkbox" id="summaryFastMode" aria-label="Fast mode">
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
+        <label class="field-row" for="summarySpeed">Speed
+          <select id="summarySpeed" aria-label="Speed"></select>
+        </label>
         <label class="field-row" for="summaryWordThreshold">For emails over
           <span class="threshold-value"><input type="number" id="summaryWordThreshold" min="1" max="10000" step="1" aria-label="Summary word threshold"> words</span>
         </label>
         <label class="field-row" for="summaryModel">Model
-          <select id="summaryModel">
-            <option value="gpt-6-luna">GPT-6 Luna</option>
-            <option value="gpt-6.1-sol">GPT-6.1 Sol</option>
-            <option value="gpt-6-astra">GPT-6 Astra</option>
-          </select>
+          <select id="summaryModel" aria-label="Model"></select>
         </label>
         <p class="api-status" id="apiStatus" role="status">Checking API settings…</p>
         <details>

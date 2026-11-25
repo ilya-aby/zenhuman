@@ -1,10 +1,21 @@
 const toggleNames = Object.keys(ZH_DEFAULT_SETTINGS).filter(name => typeof ZH_DEFAULT_SETTINGS[name] === 'boolean');
 const status = document.getElementById('apiStatus');
-chrome.storage.sync.get(ZH_DEFAULT_SETTINGS, settings => {
+const modelPicker = document.getElementById('summaryModel');
+const speedPicker = document.getElementById('summarySpeed');
+Object.entries(ZenhumanSettings.models).forEach(([value, label]) => modelPicker.add(new Option(label, value)));
+Object.entries(ZenhumanSettings.speeds).forEach(([value, label]) => speedPicker.add(new Option(label, value)));
+function showSpeed(options) {
+  const ultrafast = speedPicker.querySelector('[value="ultrafast"]');
+  ultrafast.disabled = !ZenhumanSettings.supportsUltrafast(options.summaryModel);
+  ultrafast.textContent = ultrafast.disabled ? 'Ultrafast (Sol/Astra only)' : 'Ultrafast';
+  speedPicker.value = options.summarySpeed;
+}
+chrome.storage.sync.get(ZenhumanSettings.storageDefaults, settings => {
   settings = { ...settings, ...ZenhumanSettings.summaryOptions(settings) };
   toggleNames.forEach(name => { document.getElementById(name).checked = settings[name]; });
   document.getElementById('summaryWordThreshold').value = settings.summaryWordThreshold;
-  document.getElementById('summaryModel').value = settings.summaryModel;
+  modelPicker.value = settings.summaryModel;
+  showSpeed(settings);
   document.getElementById('summaryProperties').open = settings.summarizeEmails;
 });
 toggleNames.forEach(name => {
@@ -14,7 +25,11 @@ toggleNames.forEach(name => {
     chrome.storage.sync.set({ [name]: checkbox.checked });
   });
 });
-document.getElementById('summaryModel').addEventListener('change', event => chrome.storage.sync.set({ summaryModel: event.target.value }));
+modelPicker.addEventListener('change', () => {
+  const options = ZenhumanSettings.summaryOptions({ summaryModel: modelPicker.value, summarySpeed: speedPicker.value });
+  showSpeed(options); chrome.storage.sync.set(options);
+});
+speedPicker.addEventListener('change', () => chrome.storage.sync.set({ summarySpeed: speedPicker.value }));
 document.getElementById('summaryWordThreshold').addEventListener('input', event => event.target.setCustomValidity(''));
 document.getElementById('summaryWordThreshold').addEventListener('change', async event => {
   const value = Number(event.target.value);

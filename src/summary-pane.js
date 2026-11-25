@@ -4,6 +4,7 @@
   let current = null;
   let timer;
   let route = location.href;
+  let dismissed = false;
   const summaries = new Map();
   const prefetching = new Set();
   let prefetchTimer;
@@ -86,9 +87,13 @@
 
   function discard() { if (current || reading) stopPrefetch(); current?.card.remove(); current = null; reading = null; }
   function schedule() {
-    if (current && current.route !== location.href) discard();
+    if (route !== location.href) {
+      route = location.href;
+      dismissed = false;
+      discard();
+    }
     // Coalesce updates without waiting for the rest of Superhuman to go quiet.
-    if (settings.summarizeEmails && !timer) timer = requestAnimationFrame(() => { timer = null; update(); });
+    if (settings.summarizeEmails && !dismissed && !timer) timer = requestAnimationFrame(() => { timer = null; update(); });
   }
 
   function discoverBodies(message) {
@@ -118,7 +123,7 @@
     const title = element('span', 'zh-summary-title', 'Summarizing...');
     toggle.append(mark, title);
     const meta = element('span', 'zh-summary-meta', `${words.toLocaleString()} words`);
-    const chevron = element('span', 'zh-summary-chevron');
+    const chevron = element('span', 'zh-summary-control zh-summary-chevron');
     chevron.setAttribute('aria-hidden', 'true'); toggle.append(meta, chevron);
     const body = element('div', 'zh-summary-content');
     body.setAttribute('aria-live', 'polite'); body.setAttribute('aria-busy', 'true');
@@ -128,7 +133,18 @@
       toggle.setAttribute('aria-expanded', String(!body.hidden));
     });
     toggle.addEventListener('keydown', event => event.stopPropagation());
-    const header = element('div', 'zh-summary-header'); header.append(toggle);
+    const close = element('button', 'zh-summary-control zh-summary-close');
+    close.type = 'button';
+    close.setAttribute('aria-label', 'Close summary');
+    close.title = 'Close summary';
+    close.addEventListener('click', event => {
+      event.stopPropagation();
+      if (current?.card !== card) return;
+      dismissed = true;
+      discard();
+    });
+    close.addEventListener('keydown', event => event.stopPropagation());
+    const header = element('div', 'zh-summary-header'); header.append(toggle, close);
     card.append(header, body); return { card, body, title };
   }
 
@@ -190,7 +206,7 @@
   }
 
   function update() {
-    if (!settings.summarizeEmails || !/\/thread\/[^/]+/.test(location.pathname)) { discard(); return; }
+    if (dismissed || !settings.summarizeEmails || !/\/thread\/[^/]+/.test(location.pathname)) { discard(); return; }
     const pane = [...document.querySelectorAll('.ThreadPaneView.isVisible')].find(node => node.getClientRects().length);
     const messages = pane ? [...pane.querySelectorAll('.MessagePane-expanded')].filter(node => node.getClientRects().length) : [];
     const message = messages.find(node => node.classList.contains('isFocus')) || messages.at(-1);
@@ -240,13 +256,12 @@
     document.addEventListener('load', schedule, true);
     // History changes and new shadow roots can occur without a document mutation.
     setInterval(() => {
-      if (route !== location.href) { route = location.href; discard(); schedule(); }
-      if (settings.summarizeEmails && !current) schedule();
+      if (route !== location.href || (settings.summarizeEmails && !current && !dismissed)) schedule();
     }, 250);
-    chrome.storage.sync.get(ZH_DEFAULT_SETTINGS, apply);
+    chrome.storage.sync.get(ZenhumanSettings.storageDefaults, apply);
   }
   chrome.storage.onChanged.addListener((changes, namespace) => {
-    if (namespace === 'sync') chrome.storage.sync.get(ZH_DEFAULT_SETTINGS, apply);
+    if (namespace === 'sync') chrome.storage.sync.get(ZenhumanSettings.storageDefaults, apply);
   });
   // Trusted credential storage does not send change events to content scripts.
   chrome.runtime.onMessage.addListener((message, sender) => {
